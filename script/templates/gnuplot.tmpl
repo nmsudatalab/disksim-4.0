@@ -1,0 +1,11 @@
+set title "${METRIC}" font ",16"
+set label "${DESC}" at screen 0.5, 0.88 center font "Arial,12"
+unset key
+
+set xlabel "threads"
+set ylabel "value"
+set xtic auto
+set ytic auto
+set grid xtics ytics
+
+plot "<cat" using 1:2 with lines

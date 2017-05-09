@@ -1,0 +1,15 @@
+# disks are synchronized by the controller to spin at the same angular orientation
+disksim_syncset sync0 {
+  type = disk,
+  devices = [ ${DEVICES} ]
+}
+
+# RAID3
+disksim_logorg ${RAID_TYPE} {
+  Addressing mode = Array,
+  Distribution scheme = Striped,
+  Redundancy scheme = Parity_disk,
+  Stripe unit  =  1,
+  Number of copies =  0,
+  Parity stripe unit =  1,
+  Parity rotation type =  1,

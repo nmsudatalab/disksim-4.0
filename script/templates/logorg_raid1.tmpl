@@ -1,0 +1,9 @@
+# RAID1 (mirroring)
+disksim_logorg ${RAID_TYPE} {
+  Addressing mode = Parts,
+  Distribution scheme = Asis,
+  Redundancy scheme = Shadowed,
+  Number of copies =  ${DISKS_N},
+  Stripe unit  =  0,
+  Parity stripe unit =  1,
+  Parity rotation type =  1,

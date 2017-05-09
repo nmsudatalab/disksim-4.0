@@ -1,0 +1,168 @@
+disksim_global Global {
+  Init Seed = 42,
+  Real Seed = 42,
+  Detailed execution trace                        = ../${WORKDIR}/execdetail,
+  Output file for trace of I/O requests simulated = ../${WORKDIR}/diskrequest,
+  Stat definition file                            = statdefs
+}
+
+disksim_stats Stats {
+
+  iodriver stats = disksim_iodriver_stats {
+    Print driver size stats              = ${PRINT_STATS},
+    Print driver locality stats          = ${PRINT_STATS},
+    Print driver blocking stats          = ${PRINT_STATS},
+    Print driver interference stats      = ${PRINT_STATS},
+    Print driver queue stats             = ${PRINT_STATS},
+    Print driver crit stats              = ${PRINT_STATS},
+    Print driver idle stats              = ${PRINT_STATS},
+    Print driver intarr stats            = ${PRINT_STATS},
+    Print driver streak stats            = ${PRINT_STATS},
+    Print driver stamp stats             = ${PRINT_STATS},
+    Print driver per-device stats        = ${PRINT_STATS}
+  },
+
+  bus stats = disksim_bus_stats {
+    Print bus idle stats                 = ${PRINT_STATS},
+    Print bus arbwait stats              = ${PRINT_STATS}
+  },
+
+  ctlr stats = disksim_ctlr_stats {
+    Print controller cache stats         = ${PRINT_STATS},
+    Print controller size stats          = ${PRINT_STATS},
+    Print controller locality stats      = ${PRINT_STATS},
+    Print controller blocking stats      = ${PRINT_STATS},
+    Print controller interference stats  = ${PRINT_STATS},
+    Print controller queue stats         = ${PRINT_STATS},
+    Print controller crit stats          = ${PRINT_STATS},
+    Print controller idle stats          = ${PRINT_STATS},
+    Print controller intarr stats        = ${PRINT_STATS},
+    Print controller streak stats        = ${PRINT_STATS},
+    Print controller stamp stats         = ${PRINT_STATS},
+    Print controller per-device stats    = ${PRINT_STATS}
+  },
+
+  device stats = disksim_device_stats {
+    Print device queue stats             = 1,
+    Print device crit stats              = ${PRINT_STATS},
+    Print device idle stats              = ${PRINT_STATS},
+    Print device intarr stats            = ${PRINT_STATS},
+    Print device size stats              = 1,
+    Print device seek stats              = ${PRINT_STATS},
+    Print device latency stats           = ${PRINT_STATS},
+    Print device xfer stats              = ${PRINT_STATS},
+    Print device acctime stats           = ${PRINT_STATS},
+    Print device interfere stats         = ${PRINT_STATS},
+    Print device buffer stats            = ${PRINT_STATS}
+  },
+
+  process flow stats = disksim_pf_stats {
+    Print per-process stats              = ${PRINT_STATS},
+    Print per-CPU stats                  = ${PRINT_STATS},
+    Print all interrupt stats            = ${PRINT_STATS},
+    Print sleep stats                    = ${PRINT_STATS}
+  }
+
+} # end of stats block
+
+# disksim_iosim IS {
+#   I/O Trace Time Scale = 1.0
+#  }  # end of iosim spec
+
+disksim_iodriver DRIVER0 {
+  type = 1,
+  Constant access time = 0.0,
+  Use queueing in subsystem = 1,
+  Scheduler = disksim_ioqueue {
+    Scheduling policy = 3,
+    Cylinder mapping strategy = 1,
+    Write initiation delay = 0.0,
+    Read initiation delay = 0.0,
+    Sequential stream scheme = 0,
+    Maximum concat size = 128,
+    Overlapping request scheme = 0,
+    Sequential stream diff maximum = 0,
+    Scheduling timeout scheme = 0,
+    Timeout time/weight = 6,
+    Timeout scheduling = 4,
+    Scheduling priority scheme = 0,
+    Priority scheduling = 4
+  } # end of Scheduler
+} # end of DRV0 spec
+
+disksim_bus BUS0 {
+  type = 1,
+  Arbitration type = 1,
+  Arbitration time = 0.0,
+  Read block transfer time = 0.0,
+  Write block transfer time = 0.0,
+  Print stats =  0
+} # end of BUS0 spec
+
+disksim_bus BUS1 {
+  type = 1,
+  Arbitration type = 1,
+  Arbitration time = 0.0,
+  Read block transfer time = 0.0512,
+  Write block transfer time = 0.0512,
+  Print stats =  1
+} # end of BUS1 spec
+
+disksim_ctlr CTLR0 {
+  type = 1,
+  Scale for delays = 0.0,
+  Bulk sector transfer time = 0.0,
+  Maximum queue length = 0,
+  Print stats =  1
+} # end of CTLR0 spec
+
+source ${DISK_SPEC}
+
+# component instantiation
+instantiate [ statfoo ] as Stats
+instantiate [ bus0 ] as BUS0
+instantiate [ bus1 ] as BUS1
+instantiate [ ${DEVICES} ] as ${DISK_NAME}
+instantiate [ driver0 ] as DRIVER0
+instantiate [ ctlr0 ] as CTLR0
+
+# system topology
+topology disksim_iodriver driver0 [
+  disksim_bus bus0 [
+    disksim_ctlr ctlr0 [
+      disksim_bus bus1 [
+        ${DISKS_TOPOLOGY}
+      ]
+    ]
+  ]
+]
+
+${LOGORG_BLOCK}
+  devices = [ ${DEVICES} ],
+  ${PRINT_MAPREQUESTS}
+  Copy choice on read =  6,
+  Synch writes for safety =  0,
+  RMW vs. reconstruct =  0.5,
+  Time stamp interval =  0.000000,
+  Time stamp start time =  60000.000000,
+  Time stamp stop time =  10000000000.000000,
+  Time stamp file name =  ../${WORKDIR}/stamps
+}
+
+# process flow spec
+disksim_pf Proc {
+  Number of processors =  ${PROC_N},
+  Process-Flow Time Scale =  1.0
+} # end of process flow spec
+
+# synthetic workload spec
+disksim_synthio Synthio {
+  Number of I/O requests to generate =  ${REQUESTS_N},
+  Maximum time of trace generated  =  100000.0,
+  System call/return with each request =  0,
+  Think time from call to request =  0.0,
+  Think time from request to return =  0.0,
+  Generators = [
+${GENERATORS}
+  ] # end of generator list
+} # end of synthetic workload spec

@@ -1,0 +1,16 @@
+    disksim_synthgen {
+      Storage capacity per device = 17938986,
+      devices = [ ${RAID_TYPE} ],
+      Blocking factor                       = 8,
+      Probability of sequential access      = ${SEQ_PROB},
+      Probability of local access           = 0.0,
+      Probability of read access            = ${READ_PROB},
+      Probability of time-critical request  = 1.0,
+      Probability of time-limited request   = 0.0,
+      Time-limited think times        = [ normal, 30.0, 100.0  ],
+      General inter-arrival times     = [ exponential, 0.0, 25.0  ],
+      Sequential inter-arrival times  = [ normal, 0.0, 0.0  ],
+      Local inter-arrival times       = [ exponential, 0.0, 0.0  ],
+      Local distances                 = [ normal, 0.0, 40000.0  ],
+      Sizes                           = [ ${SYNTH_SIZES} ]
+    }

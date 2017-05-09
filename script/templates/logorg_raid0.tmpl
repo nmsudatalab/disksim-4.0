@@ -1,0 +1,9 @@
+# RAID0 (stripped)
+disksim_logorg ${RAID_TYPE} {
+  Addressing mode = Array,
+  Distribution scheme = Striped,
+  Redundancy scheme = Noredun,
+  Stripe unit  =  ${STRIPE_UNIT},
+  Number of copies =  0,
+  Parity stripe unit =  1,
+  Parity rotation type =  1,
