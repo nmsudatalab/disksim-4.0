@@ -1,0 +1,157 @@
+--- disksim-4.0/libparam/util.c	2016-11-30 00:39:14.872589038 +0100
++++ disksim-4.0-new/libparam/util.c	2016-11-30 00:41:46.129397566 +0100
+@@ -47,7 +47,7 @@
+ 
+ #include <fcntl.h>
+ 
+-//#include <libgen.h>
++#include <libgen.h>
+ 
+ #include "libparam.h"
+ #include "bitvector.h"
+--- disksim-4.0/memsmodel/Makefile	2008-05-11 23:30:54.000000000 +0200
++++ disksim-4.0-new/memsmodel/Makefile	2016-11-30 00:41:46.129397566 +0100
+@@ -78,7 +78,7 @@
+ 	$(CC) -c $(CFLAGS) $< -o $@
+ 
+ mems_seektest: mems_seektest.o libmems_internals.a
+-	$(CC) -o $@ mems_seektest.o $(LDFLAGS) $(CFLAGS) -lmems_internals
++	$(CC) -o $@ mems_seektest.o $(CFLAGS) -lmems_internals $(LDFLAGS)
+ 
+ libmems_internals.a: mems_internals.o mems_piecewise_seek.o mems_hong_seek.o
+ 	ar cru $@ mems_internals.o mems_piecewise_seek.o mems_hong_seek.o
+--- disksim-4.0/src/disksim_device.c	2016-11-30 00:39:14.828588680 +0100
++++ disksim-4.0-new/src/disksim_device.c	2016-11-30 00:41:46.129397566 +0100
+@@ -143,31 +143,48 @@
+   /* note that numdisks must be equal to diskinfo->disks_len */
+   newlen = numdevices ? (2 * numdevices) : 2;
+   zerocnt = (newlen == 2) ? 2 : (newlen/2);
+-  disksim->deviceinfo->devicenames = 
+-    realloc(disksim->deviceinfo->devicenames, newlen * sizeof(char *));
+-  bzero(disksim->deviceinfo->devicenames + c, zerocnt * sizeof(char *));
++//  disksim->deviceinfo->devicenames = 
++//    realloc(disksim->deviceinfo->devicenames, newlen * sizeof(char *));
++//  bzero(disksim->deviceinfo->devicenames + c, zerocnt * sizeof(char *));
++//
++//  devicenos = realloc(devicenos, newlen*sizeof(int));
++//#ifndef WIN32
++//  bzero(devicenos + c, zerocnt * sizeof(int));
++//#else
++//  bzero(devicenos + c, zerocnt * sizeof(*(devicenos)));
++//#endif
++//
++//  devicetypes = realloc(devicetypes, newlen*sizeof(int));
++//#ifndef WIN32
++ // bzero(devicetypes + c, zerocnt * sizeof(int));
++//#else
++//  bzero(devicetypes + c, zerocnt * sizeof(*(devicetypes)));
++//#endif
++//
++//  disksim->deviceinfo->devices = realloc(disksim->deviceinfo->devices, 
++//					 newlen*sizeof(int));
++//#ifndef WIN32
++//  bzero(disksim->deviceinfo->devices + c, zerocnt * sizeof(int));
++//#else
++//  bzero(disksim->deviceinfo->devices + c, zerocnt * sizeof(*(disksim->deviceinfo->devices)));
++//#endif
++  char **tmpdevname = calloc(newlen, sizeof(char *));
++  int *newdevnos    = calloc(newlen, sizeof(int));
++  int *newdevtypes  = calloc(newlen, sizeof(int));
++  struct deviceheader **newdevs = calloc(newlen, sizeof(struct deviceheader *));
+ 
+-  devicenos = realloc(devicenos, newlen*sizeof(int));
+-#ifndef WIN32
+-  bzero(devicenos + c, zerocnt * sizeof(int));
+-#else
+-  bzero(devicenos + c, zerocnt * sizeof(*(devicenos)));
+-#endif
++  if (numdevices){
++    memcpy(tmpdevname, disksim->deviceinfo->devicenames, numdevices * sizeof(char*));
++    memcpy(newdevnos, devicenos, numdevices * sizeof(int));
++    memcpy(newdevtypes, devicetypes, numdevices * sizeof(int));
++    memcpy(newdevs, disksim->deviceinfo->devices,
++    numdevices * sizeof(struct deviceheader *));
++  }
+ 
+-  devicetypes = realloc(devicetypes, newlen*sizeof(int));
+-#ifndef WIN32
+-  bzero(devicetypes + c, zerocnt * sizeof(int));
+-#else
+-  bzero(devicetypes + c, zerocnt * sizeof(*(devicetypes)));
+-#endif
+-
+-  disksim->deviceinfo->devices = realloc(disksim->deviceinfo->devices, 
+-					 newlen*sizeof(int));
+-#ifndef WIN32
+-  bzero(disksim->deviceinfo->devices + c, zerocnt * sizeof(int));
+-#else
+-  bzero(disksim->deviceinfo->devices + c, zerocnt * sizeof(*(disksim->deviceinfo->devices)));
+-#endif
++  disksim->deviceinfo->devicenames = tmpdevname;
++  devicenos = newdevnos;
++  devicetypes = newdevtypes;
++  disksim->deviceinfo->devices = newdevs;
+ 
+   disksim->deviceinfo->devs_len = newlen;
+ 
+--- disksim-4.0/src/disksim_global.h	2016-11-30 00:39:14.828588680 +0100
++++ disksim-4.0-new/src/disksim_global.h	2016-11-30 00:41:46.129397566 +0100
+@@ -253,7 +253,7 @@
+    int    temp;
+ } foo;
+ 
+-#define DISKSIM_EVENT_SIZE	128
++#define DISKSIM_EVENT_SIZE	200
+ #define DISKSIM_EVENT_SPACESIZE	(DISKSIM_EVENT_SIZE - sizeof(struct foo))
+ 
+ typedef struct ev {
+--- disksim-4.0/src/disksim_interface.h	2008-05-11 23:30:53.000000000 +0200
++++ disksim-4.0-new/src/disksim_interface.h	2016-11-30 00:41:46.129397566 +0100
+@@ -50,6 +50,7 @@
+   int batchno;
+   int batch_complete;
+   void *reqctx;         /* context passed with the request */
++  long id;
+ };
+ 
+ struct disksim_interface;
+--- disksim-4.0/src/Makefile	2016-11-30 00:39:14.828588680 +0100
++++ disksim-4.0-new/src/Makefile	2016-11-30 00:41:46.129397566 +0100
+@@ -62,10 +62,10 @@
+ MODULEDEPS = modules
+ endif
+ 
+-all: disksim rms hplcomb syssim
++all: disksim rms hplcomb physim
+ 
+ clean:
+-	rm -f TAGS *.o disksim syssim rms hplcomb core libdisksim.a
++	rm -f TAGS *.o disksim physim rms hplcomb core libdisksim.a
+ 	$(MAKE) -C modules clean
+ 
+ realclean: clean
+@@ -126,10 +126,10 @@
+ 	cp libdisksim.a ../lib
+ 
+ disksim : $(MODULEDEPS) libdisksim.a disksim_main.o 
+-	$(CC) $(CFLAGS) -o $@ disksim_main.o $(LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ disksim_main.o $(LDFLAGS) -lm
+ 
+-syssim: syssim_driver.o libdisksim.a
+-	$(CC) $(CFLAGS) -o $@ syssim_driver.o disksim_interface.o $(LDFLAGS)
++physim: physim_driver.o libdisksim.a
++	$(CC) $(CFLAGS) -o $@ physim_driver.o disksim_interface.o $(LDFLAGS) -lm
+ 
+ ########################################################################
+ 
+--- disksim-4.0.zal/libparam/libparam.y	2008-05-16 23:04:35.000000000 +0200
++++ disksim-4.0/libparam/libparam.y	2015-11-25 10:12:18.280052240 +0100
+@@ -38,7 +38,7 @@
+ 
+ #define YYERROR_VERBOSE
+ 
+-void yyerror (char *s) {
++void yyerror (const char *s) {
+   fprintf(stderr, "*** error: on line %d of %s: ", lp_lineno, lp_filename);
+   fprintf(stderr, "%s\n", s);
+ }

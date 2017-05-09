@@ -1,0 +1,67 @@
+--- disksim-4.0/src/disksim_synthio.c	2008-05-11 23:30:53.000000000 +0200
++++ disksim-4.0-fixed/src/disksim_synthio.c	2016-12-06 10:01:14.512697356 +0100
+@@ -885,17 +886,17 @@
+ 
+ 
+ 
+-int 
++int
+ loadsynthdevs(synthio_generator *result, struct lp_list *l)
+ {
+   int c;
+-  int num, type;
++  int num;
+   char *name;
+   int slot = 0;
+ 
+   result->devno = malloc(l->values_len * sizeof(int));
+   bzero(result->devno, l->values_len * sizeof(int));
+-  
++
+   for(c = 0; c < l->values_len; c++) {
+     if(!l->values[c]) continue;
+     if(l->values[c]->t != S) {
+@@ -903,19 +904,35 @@
+       return -1;
+     }
+     name = l->values[c]->v.s;
+-    
+-    if(!getdevbyname(name, &num, 0, &type)) {
+-      if(!getlogorgbyname(sysorgs, numsysorgs, name, &num)) {
+-	fprintf(stderr, "*** error: bad device %s in synthetic generator spec: no such device or logorg.\n", name);
+-	return -1;
+-      }
++
++    /* find an ID of first device, not just an ID of matched logorg */
++    num = getfirstdev(name);
++    if (num == -1) {
++      fprintf(stderr, "*** error: bad device %s in synthetic generator spec: no such device or logorg.\n", name);
++      return -1;
++    } else {
++      result->devno[slot++] = num;
+     }
+ 
+-    result->devno[slot++] = num;
+   }
+ 
+-
+   result->numdisks = slot;
+ 
+   return 0;
+ }
++
++
++/* return first found device ID, not just an ID of matched logorg */
++int
++getfirstdev (char *name) {
++  int num, type, j;
++
++  if (getdevbyname(name, &num, 0, &type)) {
++    return num;
++  } else if (getlogorgbyname(sysorgs, numsysorgs, name, &num)) {
++    if (!strcmp(name, sysorgs[num]->name))
++      return sysorgs[num]->devs[0].devno;
++  }
++
++  return -1;
++}

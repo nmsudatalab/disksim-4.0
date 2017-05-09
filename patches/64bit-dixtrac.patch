@@ -1,0 +1,49 @@
+--- disksim-4.0/dixtrac/Makefile	2016-11-30 00:39:14.836588745 +0100
++++ disksim-4.0-new/dixtrac/Makefile	2016-11-30 00:41:46.125397555 +0100
+@@ -53,7 +53,7 @@
+ ST_LDFLAGS = -L$(STHREADS) -lst
+ ST_CFLAGS = -I$(ST_DIR)/obj
+ 
+-LDFLAGS  = -L. -lm -l$(LIBNAME) -ldxtools \
++LDFLAGS = -L. -l$(LIBNAME) -ldxtools -lm\
+ 	$(LIBDISKSIM_LDFLAGS) \
+ 	$(MEMSMODEL_LDFLAGS) \
+ 	$(DISKMODEL_LDFLAGS) \
+@@ -103,29 +103,29 @@
+ 	$(CC)  -o $@ $(OBJFILES) $(LDFLAGS)
+ 
+ dx_stat: dx_stat.o libdxtools.a
+-	$(CC) -o $@ $< $(LDFLAGS)
++	$(CC) -o $@ $< $(LDFLAGS) -lm
+ 
+ dx_misc: dx_misc.o libdxtools.a
+-	$(CC) -o $@ $< $(LDFLAGS) 
++	$(CC) -o $@ $< $(LDFLAGS) -lm
+ 
+ dx_layout: dx_layout.o libdxtools.a
+-	$(CC) -o $@ dx_layout.o $(LDFLAGS)
++	$(CC) -o $@ dx_layout.o $(LDFLAGS) -lm
+ 
+ dx_mech: dx_mech.o libdxtools.a
+-	$(CC) -o $@ dx_mech.o $(LDFLAGS)
++	$(CC) -o $@ dx_mech.o $(LDFLAGS) -lm
+ 
+ dx_seeks: dx_seeks.o libdxtools.a
+-	$(CC) -o $@ $< $(LDFLAGS)
++	$(CC) -o $@ $< $(LDFLAGS) -lm
+ 
+ dx_skews_simple: dx_skews_simple.o libdxtools.a
+-	$(CC) -o $@ dx_skews_simple.o $(LDFLAGS)
++	$(CC) -o $@ dx_skews_simple.o $(LDFLAGS) -lm
+ 
+ dx_skew_curve: dx_skew_curve.o libdxtools.a
+-	$(CC) -o $@ $< $(LDFLAGS)
++	$(CC) -o $@ $< $(LDFLAGS) -lm
+ 
+ 
+ dx_rest: dx_rest.o libdxtools.a
+-	$(CC) -o $@ dx_rest.o $(LDFLAGS)
++	$(CC) -o $@ dx_rest.o $(LDFLAGS) -lm
+ 
+ $(LAYOUT): $(LIBFILE) $(LAYOUT).o
+ #	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(LAYOUT).c

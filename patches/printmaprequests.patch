@@ -1,0 +1,53 @@
+--- disksim-4.0/src/disksim_logorg.h	2008-05-11 23:30:53.000000000 +0200
++++ disksim-4.0-fixed/src/disksim_logorg.h	2016-12-05 22:37:25.000000000 +0100
+@@ -281,6 +281,8 @@
+    /* rcohen's additions */
+    int    startdev;
+    int    enddev;
++   int    printmaprequests;
++
+ } logorg;
+
+ /* exported disksim_logorg.c functions */
+--- disksim-4.0/src/modules/logorg.modspec	2008-05-11 23:30:53.000000000 +0200
++++ disksim-4.0-fixed/src/modules/logorg.modspec	2016-12-05 23:09:59.000000000 +0100
+@@ -245,3 +245,12 @@
+ to a single time stamp and contains the queue lengths of each device
+ separated by white space.  A value of ``0'' or of ``null'' disables
+ this feature (as does disabling the time stamp mechanism).
++
++PARAM Print maprequests			I	0
++TEST  RANGE(i,0,1)
++INIT result->printmaprequests = i;
++
++Print maprequests to the output file if a value is ``1''.
++This is a resulted line format:
++\texttt{logorg_maprequest: logorg %s, dev %s, blkno %d, opid %d}
++Use with care - the output file can be huge.
+--- disksim-4.0/src/disksim_logorg.c	2008-05-11 23:30:53.000000000 +0200
++++ disksim-4.0-fixed/src/disksim_logorg.c	2016-12-06 10:15:36.689207595 +0100
+@@ -813,12 +813,24 @@
+    temp = curr->next;
+    i = 1;
+    while (temp != curr) {
++      if (logorgs[logorgno]->printmaprequests)
++         fprintf (outputfile, "logorg_maprequest: logorg %s, dev %s, blkno %d, opid %d\n",
++             logorgs[logorgno]->name,
++             disksim->deviceinfo->devicenames[logorgs[logorgno]->devs[(temp->devno)].devno],
++             logorgs[logorgno]->devs[(temp->devno)].startblkno + temp->blkno,
++             curr->opid);
+       temp->blkno += logorgs[logorgno]->devs[(temp->devno)].startblkno;
+       temp->devno = logorgs[logorgno]->devs[(temp->devno)].devno;
+       temp->opid = curr->opid;
+       temp = temp->next;
+       i++;
+    }
++   if (logorgs[logorgno]->printmaprequests)
++      fprintf (outputfile, "logorg_maprequest: logorg %s, dev %s, blkno %d, opid %d\n",
++          logorgs[logorgno]->name,
++          disksim->deviceinfo->devicenames[curr->devno],
++          curr->blkno,
++          curr->opid);
+    req->numreqs = numreqs;
+    logorg_addnewtooutstandq(logorgs[logorgno], req);
+    logorgs[logorgno]->opid++;
