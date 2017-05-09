@@ -1,0 +1,1780 @@
+
+*** Output file name: mems.g1.nospring.outv
+*** Input trace format: ascii
+*** I/O trace used: 0
+*** Synthgen to be used?: 1
+
+disksim_global Global {
+Init Seed = 15,
+Real Seed = 15,
+Stat definition file = statdefs.mems
+} # end of Global spec
+
+disksim_stats Stats {
+iodriver stats = disksim_iodriver_stats {
+Print driver size stats = 1,
+Print driver locality stats = 0,
+Print driver blocking stats = 0,
+Print driver interference stats = 0,
+Print driver queue stats = 1,
+Print driver crit stats = 1,
+Print driver idle stats = 1,
+Print driver intarr stats = 1,
+Print driver streak stats = 1,
+Print driver stamp stats = 1,
+Print driver per-device stats = 1
+   },
+bus stats = disksim_bus_stats {
+Print bus idle stats = 1,
+Print bus arbwait stats = 1
+   },
+ctlr stats = disksim_ctlr_stats {
+Print controller cache stats = 1,
+Print controller size stats = 1,
+Print controller locality stats = 1,
+Print controller blocking stats = 1,
+Print controller interference stats = 1,
+Print controller queue stats = 1,
+Print controller crit stats = 1,
+Print controller idle stats = 1,
+Print controller intarr stats = 1,
+Print controller streak stats = 1,
+Print controller stamp stats = 1,
+Print controller per-device stats = 1
+   },
+device stats = disksim_device_stats {
+Print device queue stats = 1,
+Print device crit stats = 0,
+Print device idle stats = 1,
+Print device intarr stats = 0,
+Print device size stats = 0,
+Print device seek stats = 1,
+Print device latency stats = 1,
+Print device xfer stats = 1,
+Print device acctime stats = 1,
+Print device interfere stats = 0,
+Print device buffer stats = 1
+   },
+process flow stats = disksim_pf_stats {
+Print per-process stats = 1,
+Print per-CPU stats = 1,
+Print all interrupt stats = 1,
+Print sleep stats = 1
+   }
+} # end of Stats spec
+
+disksim_iodriver DRIVER0 {
+type = 1,
+Constant access time = 0.0,
+Scheduler = disksim_ioqueue {
+Scheduling policy = 1,
+Cylinder mapping strategy = 1,
+Write initiation delay = 0.0,
+Read initiation delay = 0.0,
+Sequential stream scheme = 0,
+Maximum concat size = 128,
+Overlapping request scheme = 0,
+Sequential stream diff maximum = 0,
+Scheduling timeout scheme = 0,
+Timeout time/weight = 6,
+Timeout scheduling = 4,
+Scheduling priority scheme = 0,
+Priority scheduling = 4
+   },
+Use queueing in subsystem = 1
+} # end of DRIVER0 spec
+
+disksim_bus BUS0 {
+type = 1,
+Arbitration type = 1,
+Arbitration time = 0.0,
+Read block transfer time = 0.0,
+Write block transfer time = 0.0,
+Print stats = 0
+} # end of BUS0 spec
+
+disksim_bus BUS1 {
+type = 1,
+Arbitration type = 1,
+Arbitration time = 0.0,
+Read block transfer time = 0.0,
+Write block transfer time = 0.0,
+Print stats = 1
+} # end of BUS1 spec
+
+disksim_ctlr CTLR0 {
+type = 1,
+Scale for delays = 0.0,
+Bulk sector transfer time = 0.0,
+Maximum queue length = 1,
+Print stats = 1
+} # end of CTLR0 spec
+
+source ./memsdevices.specssource ./memsdevices.specssource ./memsdevices.specsinstantiate [ 
+   statfoo
+] as Stats
+
+instantiate [ 
+   bus0
+] as BUS0
+
+instantiate [ 
+   mems0
+] as mems.g1
+
+instantiate [ 
+   bus1
+] as BUS1
+
+instantiate [ 
+   driver0
+] as DRIVER0
+
+instantiate [ 
+   ctlr0
+] as CTLR0
+
+topospec disksim_iodriver driver0 [ 
+   disksim_bus bus0 [ 
+      disksim_ctlr ctlr0 [ 
+         disksim_bus bus1 [ 
+            memsmodel_mems mems0 [ ]
+         ]
+      ]
+   ]
+]
+
+disksim_logorg org0 {
+Addressing mode = Parts,
+Distribution scheme = Asis,
+Redundancy scheme = Noredun,
+devices = [ 
+      mems0
+   ],
+Stripe unit = 2221800,
+Synch writes for safety = 0,
+Number of copies = 2,
+Copy choice on read = 6,
+RMW vs. reconstruct = 0.500000,
+Parity stripe unit = 64,
+Parity rotation type = 1,
+Time stamp interval = 0.0,
+Time stamp start time = 60000.000000,
+Time stamp stop time = 10000000000.000000,
+Time stamp file name = stamps
+} # end of org0 spec
+
+disksim_pf Proc {
+Number of processors = 1,
+Process-Flow Time Scale = 1.000000
+} # end of Proc spec
+
+disksim_synthio Synthio {
+Number of I/O requests to generate = 10000,
+Maximum time of trace generated = 1000.000000,
+System call/return with each request = 0,
+Think time from call to request = 0.0,
+Think time from request to return = 0.0,
+Generators = [ 
+      disksim_synthgen {
+Storage capacity per device = 4400000,
+devices = [ 
+            mems0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.0,
+Probability of local access = 0.0,
+Probability of read access = 0.660000,
+Probability of time-critical request = 0.0,
+Probability of time-limited request = 0.0,
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            normal, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            10000.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }
+   ]
+} # end of Synthio spec
+
+loadparams complete
+Initialized synthio process #0, first event at time 13.254472
+Kicking off cpu #0
+First event occurs at time 13.254472
+Initialization complete
+Simulation complete
+
+SIMULATION STATISTICS
+---------------------
+
+Total time of run:       500795.421080
+
+Warm-up time:            0.000000
+
+
+PROCESS FLOW STATISTICS
+-----------------------
+
+CPU #0 Total idle milliseconds:      0.000000
+CPU #0 Idle time per processor:      0.000000
+CPU #0 Percentage idle cycles:       0.000000
+CPU #0 Total false idle ms:          0.000000
+CPU #0 False idle time per CPU:      0.000000
+CPU #0 Percentage false idle cycles: 0.000000
+CPU #0 Total idle work ms:           0.000000
+CPU #0 Context Switches: 0
+CPU #0 Time spent context switching: 0.000000
+CPU #0 Percentage switching cycles:  0.000000
+CPU #0 Number of interrupts: 101086
+CPU #0 Total time in interrupts: 0.000
+CPU #0 Percentage interrupt cycles:  0.000000
+CPU #0 Time-Critical request count:      0
+CPU #0 Time-Critical Response time average: 	0.000000
+CPU #0 Time-Critical Response time std.dev.:	0.000000
+CPU #0 Time-Critical Response time maximum:	0
+CPU #0 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #0 Time-Limited request count:       0
+CPU #0 Time-Limited Response time average: 	0.000000
+CPU #0 Time-Limited Response time std.dev.:	0.000000
+CPU #0 Time-Limited Response time maximum:	0
+CPU #0 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #0 Time-Noncritical request count:   9999
+CPU #0 Time-Noncritical Response time average: 	2.004634
+CPU #0 Time-Noncritical Response time std.dev.:	0.505016
+CPU #0 Time-Noncritical Response time maximum:	5.681415
+CPU #0 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9992       7       0       0       0       0       0       0       0       0 
+CPU #0 Number of IO interrupts:            51007
+CPU #0 Time spent in I/O interrupts:       0.000000
+CPU #0 Number of clock interrupts:         50079
+CPU #0 Time spent in clock interrupts:     0.000000
+Number of sleep events:     0
+Number of I/O sleep events: 0
+Average sleep time:         0.000000
+Average I/O sleep time:     0.000000
+
+PROCESS STATISTICS
+Process Total computation time:  500795.421080
+Process Last event time:         500795.421080
+Process Number of I/O requests:  10000
+Process Number of read requests: 6691
+Process Number of C-switches:    0
+Process Number of sleeps:        0
+Process Average sleep time:      0.000000
+Process Number of I/O sleeps:    0
+Process Average I/O sleep time:  0.000000
+Process False idle time:         0.000000
+Process Read Time limits measured: 0
+Process Read Time limit duration average: 	0.000000
+Process Read Time limit duration std.dev.:	0.000000
+Process Read Time limit duration maximum:	0
+Process Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Write Time limits measured: 0
+Process Write Time limit duration average: 	0.000000
+Process Write Time limit duration std.dev.:	0.000000
+Process Write Time limit duration maximum:	0
+Process Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Read Time limits missed: 0
+Process Missed Read Time limit duration average: 	0.000000
+Process Missed Read Time limit duration std.dev.:	0.000000
+Process Missed Read Time limit duration maximum:	0
+Process Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Write Time limits missed: 0
+Process Missed Write Time limit duration average: 	0.000000
+Process Missed Write Time limit duration std.dev.:	0.000000
+Process Missed Write Time limit duration maximum:	0
+Process Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+STORAGE SUBSYSTEM STATISTICS
+----------------------------
+
+OVERALL I/O SYSTEM STATISTICS
+-----------------------------
+
+Overall I/O System Total Requests handled:	9999
+Overall I/O System Requests per second:   	19.966237
+Overall I/O System Completely idle time:  	481176.874753   	0.960825
+Overall I/O System Response time average: 	2.004634
+Overall I/O System Response time std.dev.:	0.505016
+Overall I/O System Response time maximum:	5.681415
+Overall I/O System Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9992       7       0       0       0       0       0       0       0       0 
+Overall I/O System Overlaps combined:     	0	0.000000
+Overall I/O System Read overlaps combined:	0	0.000000	0.000000
+Overall I/O System Critical Reads:      	     0  	0.000000
+Overall I/O System Critical Read Response time average: 	0.000000
+Overall I/O System Critical Read Response time std.dev.:	0.000000
+Overall I/O System Critical Read Response time maximum:	0
+Overall I/O System Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Non-Critical Reads:  	  6691  	0.669100
+Overall I/O System Non-Critical Read Response time average: 	1.893426
+Overall I/O System Non-Critical Read Response time std.dev.:	0.496666
+Overall I/O System Non-Critical Read Response time maximum:	5.681415
+Overall I/O System Non-Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   6685       6       0       0       0       0       0       0       0       0 
+Overall I/O System Critical Writes:     	     0  	0.000000
+Overall I/O System Critical Write Response time average: 	0.000000
+Overall I/O System Critical Write Response time std.dev.:	0.000000
+Overall I/O System Critical Write Response time maximum:	0
+Overall I/O System Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Non-Critical Writes: 	  3308  	0.330800
+Overall I/O System Non-Critical Write Response time average: 	2.229570
+Overall I/O System Non-Critical Write Response time std.dev.:	0.443112
+Overall I/O System Non-Critical Write Response time maximum:	5.289957
+Overall I/O System Non-Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   3307       1       0       0       0       0       0       0       0       0 
+Overall I/O System Number of reads:      6691  	0.669100
+Overall I/O System Number of writes:     3309  	0.330900
+Overall I/O System Sequential reads:        0  	0.000000  	0.000000
+Overall I/O System Sequential writes:       0  	0.000000  	0.000000
+Overall I/O System Base SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System Timeout SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System Priority SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System runlistlen:              20044.330501
+Overall I/O System runoutstanding:          0.000000
+Overall I/O System simtime:                 500795.421080
+Overall I/O System warmuptime:              0.000000
+Overall I/O System setsize:                 1
+Overall I/O System Average # requests:      0.040025
+Overall I/O System Maximum # requests:      3
+Overall I/O System End # requests:          1
+Overall I/O System Average queue length:    0.040025
+Overall I/O System Maximum queue length:    3
+Overall I/O System End queued requests:     1
+Overall I/O System Queue time average: 	2.004634
+Overall I/O System Queue time std.dev.:	0.505016
+Overall I/O System Queue time maximum:	5.681415
+Overall I/O System Queue time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9992       7       0       0       0       0       0       0       0       0 
+Overall I/O System Avg # read requests:     0.025298
+Overall I/O System Max # read requests:     3
+Overall I/O System Avg # write requests:    0.014727
+Overall I/O System Max # write requests:    2
+Overall I/O System Physical access time average: 	0.000000
+Overall I/O System Physical access time std.dev.:	0.000000
+Overall I/O System Physical access time maximum:	0
+Overall I/O System Physical access time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0    9999       0       0       0       0       0       0       0       0 
+Overall I/O System Number of batches:  0
+Overall I/O System Batch size average: 	0.000000
+Overall I/O System Batch size std.dev.:	0.000000
+Overall I/O System Batch size maximum:	0
+Overall I/O System Batch size distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Inter-arrival time average: 	50.079542
+Overall I/O System Inter-arrival time std.dev.:	50.979794
+Overall I/O System Inter-arrival time maximum:	470.999243
+Overall I/O System Inter-arrival time distribution
+   0  	      0  	0.000000  	0.000000
+   5  	    949  	0.094900  	0.094900
+  10  	    865  	0.086500  	0.181400
+  15  	    798  	0.079800  	0.261200
+  20  	    684  	0.068400  	0.329600
+  25  	    664  	0.066400  	0.396000
+  30  	    610  	0.061000  	0.457000
+  35  	    529  	0.052900  	0.509900
+  40  	    440  	0.044000  	0.553900
+  45  	    446  	0.044600  	0.598500
+  50  	    377  	0.037700  	0.636200
+  55  	    341  	0.034100  	0.670300
+  60  	    345  	0.034500  	0.704800
+  65  	    289  	0.028900  	0.733700
+  70  	    230  	0.023000  	0.756700
+  75  	    241  	0.024100  	0.780800
+  80  	    203  	0.020300  	0.801100
+  85  	    162  	0.016200  	0.817300
+  90  	    196  	0.019600  	0.836900
+  95  	    138  	0.013800  	0.850700
+ 100  	    142  	0.014200  	0.864900
+ 105  	    125  	0.012500  	0.877400
+ 110  	    108  	0.010800  	0.888200
+ 115  	    103  	0.010300  	0.898500
+ 120  	    101  	0.010100  	0.908600
+ 125  	     77  	0.007700  	0.916300
+ 130  	     60  	0.006000  	0.922300
+ 135  	     64  	0.006400  	0.928700
+ 140  	     69  	0.006900  	0.935600
+ 145  	     44  	0.004400  	0.940000
+ 150  	     62  	0.006200  	0.946200
+ 155  	     45  	0.004500  	0.950700
+ 160  	     45  	0.004500  	0.955200
+ 165  	     47  	0.004700  	0.959900
+ 170  	     40  	0.004000  	0.963900
+ 175  	     35  	0.003500  	0.967400
+ 180  	     30  	0.003000  	0.970400
+ 185  	     30  	0.003000  	0.973400
+ 190  	     20  	0.002000  	0.975400
+ 195  	    246  	0.024600  	1.000000
+Overall I/O System Read inter-arrival average: 	74.829144
+Overall I/O System Read inter-arrival std.dev.:	75.761079
+Overall I/O System Read inter-arrival maximum:	768.116980
+Overall I/O System Read inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    420     398     383     357     365     327     527     498     448    2968 
+Overall I/O System Write inter-arrival average: 	151.343433
+Overall I/O System Write inter-arrival std.dev.:	149.715326
+Overall I/O System Write inter-arrival maximum:	1266.452865
+Overall I/O System Write inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    135     115     102      84      96      91     181     155     158    2192 
+Overall I/O System Number of idle periods:  9609
+Overall I/O System Idle period length average: 	50.075645
+Overall I/O System Idle period length std.dev.:	51.014906
+Overall I/O System Idle period length maximum:	469.960813
+Overall I/O System Idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    920     847     753     660     644     578     922     778     674    2833 
+Overall I/O System Request size average: 	12.655200
+Overall I/O System Request size std.dev.:	7.763267
+Overall I/O System Request size maximum:	80
+Overall I/O System Request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6343       0    2302       0    1355 
+Overall I/O System Read request size average: 	12.757435
+Overall I/O System Read request size std.dev.:	7.866025
+Overall I/O System Read request size maximum:	80
+Overall I/O System Read request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    4210       0    1548       0     933 
+Overall I/O System Write request size average: 	12.448474
+Overall I/O System Write request size std.dev.:	7.546981
+Overall I/O System Write request size maximum:	80
+Overall I/O System Write request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    2133       0     754       0     422 
+Overall I/O System Instantaneous queue length average: 	1.039704
+Overall I/O System Instantaneous queue length std.dev.:	0.198312
+Overall I/O System Instantaneous queue length maximum:	3
+Overall I/O System Instantaneous queue length distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+   9608     385       6       0       0       0       0       0       0       0 
+Overall I/O System Sub-optimal mapping penalty average: 	0.000000
+Overall I/O System Sub-optimal mapping penalty std.dev.:	0.000000
+Overall I/O System Sub-optimal mapping penalty maximum:	0
+Overall I/O System Sub-optimal mapping penalty distribution
+   = -1    =  0    =  1    =  2    =  3    =  4    < 10    < 20    < 40     40+
+      0       0       0       0       0       0       0       0       0       0 
+
+SYSTEM-LEVEL LOGORG STATISTICS
+------------------------------
+
+System Logical Organization #0
+System logorg #0 Number of requests:       10000
+System logorg #0 Number of read requests:  6691  	0.669100
+System logorg #0 Number of accesses:       10000
+System logorg #0 Number of read accesses:  6691  	0.669100
+System logorg #0 Average outstanding:      0.040025
+System logorg #0 Maximum outstanding:      3
+System logorg #0 Avg nonzero outstanding:  1.021703
+System logorg #0 Completely idle time:     481176.874753
+System logorg #0 Response time average: 	2.004634
+System logorg #0 Response time std.dev.:	0.505016
+System logorg #0 Response time maximum:	5.681415
+System logorg #0 Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9992       7       0       0       0       0       0       0       0       0 
+System logorg #0 Time-critical reads:  0
+System logorg #0 Time-critical writes: 0
+System logorg #0 Inter-arrival time average: 	50.079542
+System logorg #0 Inter-arrival time std.dev.:	50.979794
+System logorg #0 Inter-arrival time maximum:	470.999243
+System logorg #0 Inter-arrival time distribution
+   0  	      0  	0.000000  	0.000000
+   5  	    949  	0.094900  	0.094900
+  10  	    865  	0.086500  	0.181400
+  15  	    798  	0.079800  	0.261200
+  20  	    684  	0.068400  	0.329600
+  25  	    664  	0.066400  	0.396000
+  30  	    610  	0.061000  	0.457000
+  35  	    529  	0.052900  	0.509900
+  40  	    440  	0.044000  	0.553900
+  45  	    446  	0.044600  	0.598500
+  50  	    377  	0.037700  	0.636200
+  55  	    341  	0.034100  	0.670300
+  60  	    345  	0.034500  	0.704800
+  65  	    289  	0.028900  	0.733700
+  70  	    230  	0.023000  	0.756700
+  75  	    241  	0.024100  	0.780800
+  80  	    203  	0.020300  	0.801100
+  85  	    162  	0.016200  	0.817300
+  90  	    196  	0.019600  	0.836900
+  95  	    138  	0.013800  	0.850700
+ 100  	    142  	0.014200  	0.864900
+ 105  	    125  	0.012500  	0.877400
+ 110  	    108  	0.010800  	0.888200
+ 115  	    103  	0.010300  	0.898500
+ 120  	    101  	0.010100  	0.908600
+ 125  	     77  	0.007700  	0.916300
+ 130  	     60  	0.006000  	0.922300
+ 135  	     64  	0.006400  	0.928700
+ 140  	     69  	0.006900  	0.935600
+ 145  	     44  	0.004400  	0.940000
+ 150  	     62  	0.006200  	0.946200
+ 155  	     45  	0.004500  	0.950700
+ 160  	     45  	0.004500  	0.955200
+ 165  	     47  	0.004700  	0.959900
+ 170  	     40  	0.004000  	0.963900
+ 175  	     35  	0.003500  	0.967400
+ 180  	     30  	0.003000  	0.970400
+ 185  	     30  	0.003000  	0.973400
+ 190  	     20  	0.002000  	0.975400
+ 195  	    246  	0.024600  	1.000000
+System logorg #0 Read inter-arrival average: 	74.829144
+System logorg #0 Read inter-arrival std.dev.:	75.761079
+System logorg #0 Read inter-arrival maximum:	768.116980
+System logorg #0 Read inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    420     398     383     357     365     327     527     498     448    2968 
+System logorg #0 Write inter-arrival average: 	151.343433
+System logorg #0 Write inter-arrival std.dev.:	149.715326
+System logorg #0 Write inter-arrival maximum:	1266.452865
+System logorg #0 Write inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    135     115     102      84      96      91     181     155     158    2192 
+System logorg #0 Number of streaks:		1
+System logorg #0 Streak length average: 	10000.000000
+System logorg #0 Streak length std.dev.:	0.000000
+System logorg #0 Streak length maximum:	10000
+System logorg #0 Streak length distribution
+   =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8    =  9     10+
+      0       0       0       0       0       0       0       0       0       1 
+System logorg #0 Timestamped # outstanding distribution (interval = 0.000000)
+     0       1       2       3       4       5       6       7       8      9+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Timestamped avg # outstanding difference distribution
+   <.5      <1    <1.5      <2    <2.5      <3      <4      <5      <6      6+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Timestamped max # outstanding difference distribution
+   <.5      <1    <1.5      <2    <2.5      <3      <4      <5      <6      6+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Request size average: 	12.655200
+System logorg #0 Request size std.dev.:	7.763267
+System logorg #0 Request size maximum:	80
+System logorg #0 Request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6343       0    2302       0    1355 
+System logorg #0 Read request size average: 	12.757435
+System logorg #0 Read request size std.dev.:	7.866025
+System logorg #0 Read request size maximum:	80
+System logorg #0 Read request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    4210       0    1548       0     933 
+System logorg #0 Write request size average: 	12.448474
+System logorg #0 Write request size std.dev.:	7.546981
+System logorg #0 Write request size maximum:	80
+System logorg #0 Write request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    2133       0     754       0     422 
+System logorg #0 Number of idle periods:	9609
+System logorg #0 Idle period length average: 	50.075645
+System logorg #0 Idle period length std.dev.:	51.014906
+System logorg #0 Idle period length maximum:	469.960813
+System logorg #0 Idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    920     847     753     660     644     578     922     778     674    2833 
+
+No mems requests for members of this set
+
+
+IODRIVER STATISTICS
+-------------------
+
+IOdriver Total Requests handled:	9999
+IOdriver Requests per second:   	19.966237
+IOdriver Completely idle time:  	481176.874753   	0.960825
+IOdriver Response time average: 	2.004634
+IOdriver Response time std.dev.:	0.505016
+IOdriver Response time maximum:	5.681415
+IOdriver Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9992       7       0       0       0       0       0       0       0       0 
+IOdriver Overlaps combined:     	0	0.000000
+IOdriver Read overlaps combined:	0	0.000000	0.000000
+IOdriver Critical Reads:      	     0  	0.000000
+IOdriver Critical Read Response time average: 	0.000000
+IOdriver Critical Read Response time std.dev.:	0.000000
+IOdriver Critical Read Response time maximum:	0
+IOdriver Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+IOdriver Non-Critical Reads:  	  6691  	0.669100
+IOdriver Non-Critical Read Response time average: 	1.893426
+IOdriver Non-Critical Read Response time std.dev.:	0.496666
+IOdriver Non-Critical Read Response time maximum:	5.681415
+IOdriver Non-Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   6685       6       0       0       0       0       0       0       0       0 
+IOdriver Critical Writes:     	     0  	0.000000
+IOdriver Critical Write Response time average: 	0.000000
+IOdriver Critical Write Response time std.dev.:	0.000000
+IOdriver Critical Write Response time maximum:	0
+IOdriver Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+IOdriver Non-Critical Writes: 	  3308  	0.330800
+IOdriver Non-Critical Write Response time average: 	2.229570
+IOdriver Non-Critical Write Response time std.dev.:	0.443112
+IOdriver Non-Critical Write Response time maximum:	5.289957
+IOdriver Non-Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   3307       1       0       0       0       0       0       0       0       0 
+IOdriver Number of reads:      6691  	0.669100
+IOdriver Number of writes:     3309  	0.330900
+IOdriver Sequential reads:        0  	0.000000  	0.000000
+IOdriver Sequential writes:       0  	0.000000  	0.000000
+IOdriver Base SPTF/SDF Different:      0 /  10000 	0.000000
+IOdriver Timeout SPTF/SDF Different:      0 /      0 	0.000000
+IOdriver Priority SPTF/SDF Different:      0 /      0 	0.000000
+IOdriver runlistlen:              20044.330501
+IOdriver runoutstanding:          20044.330501
+IOdriver simtime:                 500795.421080
+IOdriver warmuptime:              0.000000
+IOdriver setsize:                 1
+IOdriver Average # requests:      0.040025
+IOdriver Maximum # requests:      3
+IOdriver End # requests:          1
+IOdriver Average queue length:    0.000000
+IOdriver Maximum queue length:    1
+IOdriver End queued requests:     0
+IOdriver Queue time average: 	0.000000
+IOdriver Queue time std.dev.:	0.000000
+IOdriver Queue time maximum:	0
+IOdriver Queue time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+  10000       0       0       0       0       0       0       0       0       0 
+IOdriver Avg # read requests:     0.025298
+IOdriver Max # read requests:     3
+IOdriver Avg # write requests:    0.014727
+IOdriver Max # write requests:    2
+IOdriver Physical access time average: 	2.004634
+IOdriver Physical access time std.dev.:	0.505016
+IOdriver Physical access time maximum:	5.681415
+IOdriver Physical access time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0       0    5579    3984     393      36       7       0       0       0 
+IOdriver Number of batches:  0
+IOdriver Batch size average: 	0.000000
+IOdriver Batch size std.dev.:	0.000000
+IOdriver Batch size maximum:	0
+IOdriver Batch size distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+      0       0       0       0       0       0       0       0       0       0 
+IOdriver Inter-arrival time average: 	50.079542
+IOdriver Inter-arrival time std.dev.:	50.979794
+IOdriver Inter-arrival time maximum:	470.999243
+IOdriver Inter-arrival time distribution
+   0  	      0  	0.000000  	0.000000
+   5  	    949  	0.094900  	0.094900
+  10  	    865  	0.086500  	0.181400
+  15  	    798  	0.079800  	0.261200
+  20  	    684  	0.068400  	0.329600
+  25  	    664  	0.066400  	0.396000
+  30  	    610  	0.061000  	0.457000
+  35  	    529  	0.052900  	0.509900
+  40  	    440  	0.044000  	0.553900
+  45  	    446  	0.044600  	0.598500
+  50  	    377  	0.037700  	0.636200
+  55  	    341  	0.034100  	0.670300
+  60  	    345  	0.034500  	0.704800
+  65  	    289  	0.028900  	0.733700
+  70  	    230  	0.023000  	0.756700
+  75  	    241  	0.024100  	0.780800
+  80  	    203  	0.020300  	0.801100
+  85  	    162  	0.016200  	0.817300
+  90  	    196  	0.019600  	0.836900
+  95  	    138  	0.013800  	0.850700
+ 100  	    142  	0.014200  	0.864900
+ 105  	    125  	0.012500  	0.877400
+ 110  	    108  	0.010800  	0.888200
+ 115  	    103  	0.010300  	0.898500
+ 120  	    101  	0.010100  	0.908600
+ 125  	     77  	0.007700  	0.916300
+ 130  	     60  	0.006000  	0.922300
+ 135  	     64  	0.006400  	0.928700
+ 140  	     69  	0.006900  	0.935600
+ 145  	     44  	0.004400  	0.940000
+ 150  	     62  	0.006200  	0.946200
+ 155  	     45  	0.004500  	0.950700
+ 160  	     45  	0.004500  	0.955200
+ 165  	     47  	0.004700  	0.959900
+ 170  	     40  	0.004000  	0.963900
+ 175  	     35  	0.003500  	0.967400
+ 180  	     30  	0.003000  	0.970400
+ 185  	     30  	0.003000  	0.973400
+ 190  	     20  	0.002000  	0.975400
+ 195  	    246  	0.024600  	1.000000
+IOdriver Read inter-arrival average: 	74.829144
+IOdriver Read inter-arrival std.dev.:	75.761079
+IOdriver Read inter-arrival maximum:	768.116980
+IOdriver Read inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    420     398     383     357     365     327     527     498     448    2968 
+IOdriver Write inter-arrival average: 	151.343433
+IOdriver Write inter-arrival std.dev.:	149.715326
+IOdriver Write inter-arrival maximum:	1266.452865
+IOdriver Write inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    135     115     102      84      96      91     181     155     158    2192 
+IOdriver Number of idle periods:  9609
+IOdriver Idle period length average: 	50.075645
+IOdriver Idle period length std.dev.:	51.014906
+IOdriver Idle period length maximum:	469.960813
+IOdriver Idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    920     847     753     660     644     578     922     778     674    2833 
+IOdriver Request size average: 	12.655200
+IOdriver Request size std.dev.:	7.763267
+IOdriver Request size maximum:	80
+IOdriver Request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6343       0    2302       0    1355 
+IOdriver Read request size average: 	12.757435
+IOdriver Read request size std.dev.:	7.866025
+IOdriver Read request size maximum:	80
+IOdriver Read request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    4210       0    1548       0     933 
+IOdriver Write request size average: 	12.448474
+IOdriver Write request size std.dev.:	7.546981
+IOdriver Write request size maximum:	80
+IOdriver Write request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    2133       0     754       0     422 
+IOdriver Instantaneous queue length average: 	1.000000
+IOdriver Instantaneous queue length std.dev.:	0.000000
+IOdriver Instantaneous queue length maximum:	1
+IOdriver Instantaneous queue length distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+  10000       0       0       0       0       0       0       0       0       0 
+IOdriver Sub-optimal mapping penalty average: 	0.000000
+IOdriver Sub-optimal mapping penalty std.dev.:	0.000000
+IOdriver Sub-optimal mapping penalty maximum:	0
+IOdriver Sub-optimal mapping penalty distribution
+   = -1    =  0    =  1    =  2    =  3    =  4    < 10    < 20    < 40     40+
+      0       0       0       0       0       0       0       0       0       0 
+
+DISK STATISTICS
+---------------
+
+No disk requests encountered
+
+SIMPLEDISK STATISTICS
+---------------------
+
+No simpledisk requests encountered
+
+MEMS STATISTICS
+----------------
+
+Mems Total Requests handled:	9999
+Mems Requests per second:   	19.966237
+Mems Completely idle time:  	484071.179548   	0.966605
+Mems Response time average: 	1.703144
+Mems Response time std.dev.:	0.501863
+Mems Response time maximum:	5.381415
+Mems Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9998       1       0       0       0       0       0       0       0       0 
+Mems Overlaps combined:     	0	0.000000
+Mems Read overlaps combined:	0	0.000000	0.000000
+Mems Number of reads:      6691  	0.669167
+Mems Number of writes:     3308  	0.330833
+Mems Sequential reads:        0  	0.000000  	0.000000
+Mems Sequential writes:       0  	0.000000  	0.000000
+Mems Base SPTF/SDF Different:      0 /   9999 	0.000000
+Mems Timeout SPTF/SDF Different:      0 /      0 	0.000000
+Mems Priority SPTF/SDF Different:      0 /      0 	0.000000
+Mems runlistlen:              17029.738604
+Mems runoutstanding:          16073.527355
+Mems simtime:                 500795.421080
+Mems warmuptime:              0.000000
+Mems setsize:                 1
+Mems Average # requests:      0.034005
+Mems Maximum # requests:      3
+Mems End # requests:          0
+Mems Average queue length:    0.001909
+Mems Maximum queue length:    2
+Mems End queued requests:     0
+Mems Queue time average: 	0.095631
+Mems Queue time std.dev.:	0.249814
+Mems Queue time maximum:	3.719393
+Mems Queue time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+   9999       0       0       0       0       0       0       0       0       0 
+Mems Avg # read requests:     0.021271
+Mems Max # read requests:     3
+Mems Avg # write requests:    0.012734
+Mems Max # write requests:    2
+Mems Physical access time average: 	1.607513
+Mems Physical access time std.dev.:	0.466736
+Mems Physical access time maximum:	5.381415
+Mems Physical access time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0     550    7709    1620     107      12       1       0       0       0 
+Mems Number of batches:  0
+Mems Batch size average: 	0.000000
+Mems Batch size std.dev.:	0.000000
+Mems Batch size maximum:	0
+Mems Batch size distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Inter-arrival time average: 	0.000000
+Mems Inter-arrival time std.dev.:	0.000000
+Mems Inter-arrival time maximum:	0
+Mems Read inter-arrival average: 	0.000000
+Mems Read inter-arrival std.dev.:	0.000000
+Mems Read inter-arrival maximum:	0
+Mems Read inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Write inter-arrival average: 	0.000000
+Mems Write inter-arrival std.dev.:	0.000000
+Mems Write inter-arrival maximum:	0
+Mems Write inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Number of idle periods:  9668
+Mems Idle period length average: 	50.069423
+Mems Idle period length std.dev.:	51.009183
+Mems Idle period length maximum:	470.260813
+Mems Idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+    925     854     754     670     658     561     937     782     672    2855 
+Mems Instantaneous queue length average: 	1.001900
+Mems Instantaneous queue length std.dev.:	0.043550
+Mems Instantaneous queue length maximum:	2
+Mems Instantaneous queue length distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+   9980      19       0       0       0       0       0       0       0       0 
+Mems Sub-optimal mapping penalty average: 	0.000000
+Mems Sub-optimal mapping penalty std.dev.:	0.000000
+Mems Sub-optimal mapping penalty maximum:	0
+Mems Sub-optimal mapping penalty distribution
+   = -1    =  0    =  1    =  2    =  3    =  4    < 10    < 20    < 40     40+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Prefetched blocks average: 	0.000000
+Mems Prefetched blocks std.dev.:	0.000000
+Mems Prefetched blocks maximum:	0
+Mems Prefetched blocks distribution
+   <  0    < 10    < 20    < 30    < 40    < 50    < 60    < 70    < 80     80+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 Prefetched blocks average: 	0.000000
+Mems device 0 Prefetched blocks std.dev.:	0.000000
+Mems device 0 Prefetched blocks maximum:	0
+Mems device 0 Prefetched blocks distribution
+   <  0    < 10    < 20    < 30    < 40    < 50    < 60    < 70    < 80     80+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Prefetched blocks average: 	0.000000
+Mems device 0 sled 0 Prefetched blocks std.dev.:	0.000000
+Mems device 0 sled 0 Prefetched blocks maximum:	0
+Mems device 0 sled 0 Prefetched blocks distribution
+   <  0    < 10    < 20    < 30    < 40    < 50    < 60    < 70    < 80     80+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Seek time average: 	0.837780
+Mems Seek time std.dev.:	0.157714
+Mems Seek time maximum:	1.191637
+Mems Seek time distribution
+   =  0    <  6    <  8    < 10    < 13    < 16    < 20    < 24    < 28     28+
+      0    9999       0       0       0       0       0       0       0       0 
+Mems device 0 Seek time average: 	0.837780
+Mems device 0 Seek time std.dev.:	0.157714
+Mems device 0 Seek time maximum:	1.191637
+Mems device 0 Seek time distribution
+   =  0    <  6    <  8    < 10    < 13    < 16    < 20    < 24    < 28     28+
+      0    9999       0       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Seek time average: 	0.837780
+Mems device 0 sled 0 Seek time std.dev.:	0.157714
+Mems device 0 sled 0 Seek time maximum:	1.191637
+Mems device 0 sled 0 Seek time distribution
+   =  0    <  6    <  8    < 10    < 13    < 16    < 20    < 24    < 28     28+
+      0    9999       0       0       0       0       0       0       0       0 
+Mems X Seek time average: 	0.832625
+Mems X Seek time std.dev.:	0.164574
+Mems X Seek time maximum:	1.191637
+Mems X Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	      5  	0.000500  	0.000500
+ 0.200  	      0  	0.000000  	0.000500
+ 0.300  	      0  	0.000000  	0.000500
+ 0.400  	      0  	0.000000  	0.000500
+ 0.500  	    166  	0.016602  	0.017102
+ 0.600  	    725  	0.072507  	0.089609
+ 0.700  	   1363  	0.136314  	0.225923
+ 0.800  	   1952  	0.195220  	0.421142
+ 0.900  	   2131  	0.213121  	0.634263
+ 1.000  	   1943  	0.194319  	0.828583
+ 1.100  	   1238  	0.123812  	0.952395
+ 1.200  	    476  	0.047605  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems device 0 X Seek time average: 	0.832625
+Mems device 0 X Seek time std.dev.:	0.164574
+Mems device 0 X Seek time maximum:	1.191637
+Mems device 0 X Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	      5  	0.000500  	0.000500
+ 0.200  	      0  	0.000000  	0.000500
+ 0.300  	      0  	0.000000  	0.000500
+ 0.400  	      0  	0.000000  	0.000500
+ 0.500  	    166  	0.016602  	0.017102
+ 0.600  	    725  	0.072507  	0.089609
+ 0.700  	   1363  	0.136314  	0.225923
+ 0.800  	   1952  	0.195220  	0.421142
+ 0.900  	   2131  	0.213121  	0.634263
+ 1.000  	   1943  	0.194319  	0.828583
+ 1.100  	   1238  	0.123812  	0.952395
+ 1.200  	    476  	0.047605  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems device 0 sled 0 X Seek time average: 	0.832625
+Mems device 0 sled 0 X Seek time std.dev.:	0.164574
+Mems device 0 sled 0 X Seek time maximum:	1.191637
+Mems device 0 sled 0 X Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	      5  	0.000500  	0.000500
+ 0.200  	      0  	0.000000  	0.000500
+ 0.300  	      0  	0.000000  	0.000500
+ 0.400  	      0  	0.000000  	0.000500
+ 0.500  	    166  	0.016602  	0.017102
+ 0.600  	    725  	0.072507  	0.089609
+ 0.700  	   1363  	0.136314  	0.225923
+ 0.800  	   1952  	0.195220  	0.421142
+ 0.900  	   2131  	0.213121  	0.634263
+ 1.000  	   1943  	0.194319  	0.828583
+ 1.100  	   1238  	0.123812  	0.952395
+ 1.200  	    476  	0.047605  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems Y Seek time average: 	0.439206
+Mems Y Seek time std.dev.:	0.183561
+Mems Y Seek time maximum:	0.821381
+Mems Y Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	    217  	0.021702  	0.021702
+ 0.200  	    889  	0.088909  	0.110611
+ 0.300  	   1486  	0.148615  	0.259226
+ 0.400  	   1638  	0.163816  	0.423042
+ 0.500  	   1811  	0.181118  	0.604160
+ 0.600  	   1735  	0.173517  	0.777678
+ 0.700  	   1406  	0.140614  	0.918292
+ 0.800  	    722  	0.072207  	0.990499
+ 0.900  	     95  	0.009501  	1.000000
+ 1.000  	      0  	0.000000  	1.000000
+ 1.100  	      0  	0.000000  	1.000000
+ 1.200  	      0  	0.000000  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems device 0 Y Seek time average: 	0.439206
+Mems device 0 Y Seek time std.dev.:	0.183561
+Mems device 0 Y Seek time maximum:	0.821381
+Mems device 0 Y Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	    217  	0.021702  	0.021702
+ 0.200  	    889  	0.088909  	0.110611
+ 0.300  	   1486  	0.148615  	0.259226
+ 0.400  	   1638  	0.163816  	0.423042
+ 0.500  	   1811  	0.181118  	0.604160
+ 0.600  	   1735  	0.173517  	0.777678
+ 0.700  	   1406  	0.140614  	0.918292
+ 0.800  	    722  	0.072207  	0.990499
+ 0.900  	     95  	0.009501  	1.000000
+ 1.000  	      0  	0.000000  	1.000000
+ 1.100  	      0  	0.000000  	1.000000
+ 1.200  	      0  	0.000000  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems device 0 sled 0 Y Seek time average: 	0.439206
+Mems device 0 sled 0 Y Seek time std.dev.:	0.183561
+Mems device 0 sled 0 Y Seek time maximum:	0.821381
+Mems device 0 sled 0 Y Seek time distribution
+ 0.000  	      0  	0.000000  	0.000000
+ 0.100  	    217  	0.021702  	0.021702
+ 0.200  	    889  	0.088909  	0.110611
+ 0.300  	   1486  	0.148615  	0.259226
+ 0.400  	   1638  	0.163816  	0.423042
+ 0.500  	   1811  	0.181118  	0.604160
+ 0.600  	   1735  	0.173517  	0.777678
+ 0.700  	   1406  	0.140614  	0.918292
+ 0.800  	    722  	0.072207  	0.990499
+ 0.900  	     95  	0.009501  	1.000000
+ 1.000  	      0  	0.000000  	1.000000
+ 1.100  	      0  	0.000000  	1.000000
+ 1.200  	      0  	0.000000  	1.000000
+ 1.300  	      0  	0.000000  	1.000000
+ 1.400  	      0  	0.000000  	1.000000
+ 1.500  	      0  	0.000000  	1.000000
+ 1.600  	      0  	0.000000  	1.000000
+ 1.700  	      0  	0.000000  	1.000000
+ 1.800  	      0  	0.000000  	1.000000
+ 1.900  	      0  	0.000000  	1.000000
+ 2.000  	      0  	0.000000  	1.000000
+ 2.100  	      0  	0.000000  	1.000000
+ 2.200  	      0  	0.000000  	1.000000
+ 2.300  	      0  	0.000000  	1.000000
+ 2.400  	      0  	0.000000  	1.000000
+ 2.500  	      0  	0.000000  	1.000000
+ 2.600  	      0  	0.000000  	1.000000
+ 2.700  	      0  	0.000000  	1.000000
+ 2.800  	      0  	0.000000  	1.000000
+ 2.900  	      0  	0.000000  	1.000000
+ 3.000  	      0  	0.000000  	1.000000
+ 3.100  	      0  	0.000000  	1.000000
+ 3.200  	      0  	0.000000  	1.000000
+ 3.300  	      0  	0.000000  	1.000000
+ 3.400  	      0  	0.000000  	1.000000
+ 3.500  	      0  	0.000000  	1.000000
+ 3.600  	      0  	0.000000  	1.000000
+ 3.700  	      0  	0.000000  	1.000000
+ 3.800  	      0  	0.000000  	1.000000
+ 3.900  	      0  	0.000000  	1.000000
+ 4.000  	      0  	0.000000  	1.000000
+ 4.100  	      0  	0.000000  	1.000000
+ 4.200  	      0  	0.000000  	1.000000
+ 4.300  	      0  	0.000000  	1.000000
+ 4.400  	      0  	0.000000  	1.000000
+ 4.500  	      0  	0.000000  	1.000000
+ 4.600  	      0  	0.000000  	1.000000
+ 4.700  	      0  	0.000000  	1.000000
+ 4.800  	      0  	0.000000  	1.000000
+ 4.900  	      0  	0.000000  	1.000000
+ 5.000  	      0  	0.000000  	1.000000
+ 5.100  	      0  	0.000000  	1.000000
+ 5.200  	      0  	0.000000  	1.000000
+ 5.300  	      0  	0.000000  	1.000000
+ 5.400  	      0  	0.000000  	1.000000
+ 5.500  	      0  	0.000000  	1.000000
+ 5.600  	      0  	0.000000  	1.000000
+ 5.700  	      0  	0.000000  	1.000000
+ 5.800  	      0  	0.000000  	1.000000
+ 5.900  	      0  	0.000000  	1.000000
+ 6.000  	      0  	0.000000  	1.000000
+ 6.100  	      0  	0.000000  	1.000000
+ 6.200  	      0  	0.000000  	1.000000
+ 6.300  	      0  	0.000000  	1.000000
+ 6.400  	      0  	0.000000  	1.000000
+ 6.500  	      0  	0.000000  	1.000000
+ 6.600  	      0  	0.000000  	1.000000
+ 6.700  	      0  	0.000000  	1.000000
+ 6.800  	      0  	0.000000  	1.000000
+ 6.900  	      0  	0.000000  	1.000000
+ 7.000  	      0  	0.000000  	1.000000
+ 7.100  	      0  	0.000000  	1.000000
+ 7.200  	      0  	0.000000  	1.000000
+ 7.300  	      0  	0.000000  	1.000000
+ 7.400  	      0  	0.000000  	1.000000
+ 7.500  	      0  	0.000000  	1.000000
+ 7.600  	      0  	0.000000  	1.000000
+ 7.700  	      0  	0.000000  	1.000000
+ 7.800  	      0  	0.000000  	1.000000
+ 7.900  	      0  	0.000000  	1.000000
+ 8.000  	      0  	0.000000  	1.000000
+ 8.100  	      0  	0.000000  	1.000000
+ 8.200  	      0  	0.000000  	1.000000
+ 8.300  	      0  	0.000000  	1.000000
+ 8.400  	      0  	0.000000  	1.000000
+ 8.500  	      0  	0.000000  	1.000000
+ 8.600  	      0  	0.000000  	1.000000
+ 8.700  	      0  	0.000000  	1.000000
+ 8.800  	      0  	0.000000  	1.000000
+ 8.900  	      0  	0.000000  	1.000000
+ 9.000  	      0  	0.000000  	1.000000
+ 9.100  	      0  	0.000000  	1.000000
+ 9.200  	      0  	0.000000  	1.000000
+ 9.300  	      0  	0.000000  	1.000000
+ 9.400  	      0  	0.000000  	1.000000
+ 9.500  	      0  	0.000000  	1.000000
+ 9.600  	      0  	0.000000  	1.000000
+ 9.700  	      0  	0.000000  	1.000000
+ 9.800  	      0  	0.000000  	1.000000
+ 9.900  	      0  	0.000000  	1.000000
+Mems Initial turnaround time average: 	0.074520
+Mems Initial turnaround time std.dev.:	0.040101
+Mems Initial turnaround time maximum:	0.116144
+Mems Initial turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369       0       0       0       0       0       0       0       0    8630 
+Mems device 0 Initial turnaround time average: 	0.074520
+Mems device 0 Initial turnaround time std.dev.:	0.040101
+Mems device 0 Initial turnaround time maximum:	0.116144
+Mems device 0 Initial turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369       0       0       0       0       0       0       0       0    8630 
+Mems device 0 sled 0 Initial turnaround time average: 	0.074520
+Mems device 0 sled 0 Initial turnaround time std.dev.:	0.040101
+Mems device 0 sled 0 Initial turnaround time maximum:	0.116144
+Mems device 0 sled 0 Initial turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369       0       0       0       0       0       0       0       0    8630 
+Mems Total initial turnarounds: 12831
+Mems Initial turnaround number average: 	1.283228
+Mems Initial turnaround number std.dev.:	0.690534
+Mems Initial turnaround number maximum:	2
+Mems Initial turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369    4429    4201       0       0       0       0       0       0       0 
+Mems device 0 Total initial turnarounds: 12831
+Mems device 0 Initial turnaround number average: 	1.283228
+Mems device 0 Initial turnaround number std.dev.:	0.690534
+Mems device 0 Initial turnaround number maximum:	2
+Mems device 0 Initial turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369    4429    4201       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Initial turnaround number average: 	1.283228
+Mems device 0 sled 0 Initial turnaround number std.dev.:	0.690534
+Mems device 0 sled 0 Initial turnaround number maximum:	2
+Mems device 0 sled 0 Initial turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+   1369    4429    4201       0       0       0       0       0       0       0 
+Mems Streaming turnaround time average: 	0.116144
+Mems Streaming turnaround time std.dev.:	0.000000
+Mems Streaming turnaround time maximum:	0.116144
+Mems Streaming turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0    8299 
+Mems device 0 Streaming turnaround time average: 	0.116144
+Mems device 0 Streaming turnaround time std.dev.:	0.000000
+Mems device 0 Streaming turnaround time maximum:	0.116144
+Mems device 0 Streaming turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0    8299 
+Mems device 0 sled 0 Streaming turnaround time average: 	0.116144
+Mems device 0 sled 0 Streaming turnaround time std.dev.:	0.000000
+Mems device 0 sled 0 Streaming turnaround time maximum:	0.116144
+Mems device 0 sled 0 Streaming turnaround time distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0    8299 
+Mems Total streaming turnarounds: 16598
+Mems Streaming turnaround number average: 	2.000000
+Mems Streaming turnaround number std.dev.:	0.000000
+Mems Streaming turnaround number maximum:	2
+Mems Streaming turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0    8299       0       0       0       0       0       0       0 
+Mems device 0 Total streaming turnarounds: 16598
+Mems device 0 Streaming turnaround number average: 	2.000000
+Mems device 0 Streaming turnaround number std.dev.:	0.000000
+Mems device 0 Streaming turnaround number maximum:	2
+Mems device 0 Streaming turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0    8299       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Streaming turnaround number average: 	2.000000
+Mems device 0 sled 0 Streaming turnaround number std.dev.:	0.000000
+Mems device 0 sled 0 Streaming turnaround number maximum:	2
+Mems device 0 sled 0 Streaming turnaround number distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0    8299       0       0       0       0       0       0       0 
+Mems Subtrack accesses average: 	0.000000
+Mems Subtrack accesses std.dev.:	0.000000
+Mems Subtrack accesses maximum:	0
+Mems Subtrack accesses distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 Subtrack accesses average: 	0.000000
+Mems device 0 Subtrack accesses std.dev.:	0.000000
+Mems device 0 Subtrack accesses maximum:	0
+Mems device 0 Subtrack accesses distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Subtrack accesses average: 	0.000000
+Mems device 0 sled 0 Subtrack accesses std.dev.:	0.000000
+Mems device 0 sled 0 Subtrack accesses maximum:	0
+Mems device 0 sled 0 Subtrack accesses distribution
+   =  0    =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8      9+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Average tips per access average: 	0.000000
+Mems Average tips per access std.dev.:	0.000000
+Mems Average tips per access maximum:	0
+Mems Average tips per access distribution
+   <  0    <128    <256    <384    <512    <640    <768    <896    <1024    1024+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 Average tips per access average: 	0.000000
+Mems device 0 Average tips per access std.dev.:	0.000000
+Mems device 0 Average tips per access maximum:	0
+Mems device 0 Average tips per access distribution
+   <  0    <128    <256    <384    <512    <640    <768    <896    <1024    1024+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Average tips per access average: 	0.000000
+Mems device 0 sled 0 Average tips per access std.dev.:	0.000000
+Mems device 0 sled 0 Average tips per access maximum:	0
+Mems device 0 sled 0 Average tips per access distribution
+   <  0    <128    <256    <384    <512    <640    <768    <896    <1024    1024+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Number of spinups: 1313
+
+Mems Number of spinups for device 0: 1313
+Mems Number of spinups for device 0 sled 0: 1313
+
+Mems Number of spindowns: 1313
+
+Mems Number of spindowns for device 0: 1313
+Mems Number of spindowns for device 0 sled 0: 1313
+
+Mems Inactive time average: 	52.701428
+Mems Inactive time std.dev.:	51.653773
+Mems Inactive time maximum:	370.301773
+Mems Inactive time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0      35      27      22      24      24      21      17      18    1125 
+Mems device 0 Inactive time average: 	52.701428
+Mems device 0 Inactive time std.dev.:	51.653773
+Mems device 0 Inactive time maximum:	370.301773
+Mems device 0 Inactive time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0      35      27      22      24      24      21      17      18    1125 
+Mems device 0 sled 0 Inactive time average: 	52.701428
+Mems device 0 sled 0 Inactive time std.dev.:	51.653773
+Mems device 0 sled 0 Inactive time maximum:	370.301773
+Mems device 0 sled 0 Inactive time distribution
+   <  0    <  1    <  2    <  3    <  4    <  5    <  6    <  7    <  8      8+
+      0      35      27      22      24      24      21      17      18    1125 
+Mems Number of buffer accesses: 6691
+Mems Number of hits:            0
+Mems Buffer hit ratio:          0.000000
+Mems Buffer miss ratio:         1.000000
+
+Mems Number of buffer accesses for device 0: 6691
+Mems Number of buffer hits for device 0:     0
+Mems Buffer hit ratio for device 0:          0.000000
+Mems Buffer miss ratio for device 0:         1.000000
+
+Mems Per-request energy (uJ) average: 	0.000000
+Mems Per-request energy (uJ) std.dev.:	0.000000
+Mems Per-request energy (uJ) maximum:	0
+Mems Per-request energy (uJ) distribution
+   <  0    <  4    <  8    < 12    < 16    < 20    < 24    < 28    < 32     32+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 Per-request energy (uJ) average: 	0.000000
+Mems device 0 Per-request energy (uJ) std.dev.:	0.000000
+Mems device 0 Per-request energy (uJ) maximum:	0
+Mems device 0 Per-request energy (uJ) distribution
+   <  0    <  4    <  8    < 12    < 16    < 20    < 24    < 28    < 32     32+
+      0       0       0       0       0       0       0       0       0       0 
+Mems device 0 sled 0 Per-request energy (uJ) average: 	0.000000
+Mems device 0 sled 0 Per-request energy (uJ) std.dev.:	0.000000
+Mems device 0 sled 0 Per-request energy (uJ) maximum:	0
+Mems device 0 sled 0 Per-request energy (uJ) distribution
+   <  0    <  4    <  8    < 12    < 16    < 20    < 24    < 28    < 32     32+
+      0       0       0       0       0       0       0       0       0       0 
+Mems Total energy (J): 35.310794
+Mems Servicing energy (J): 3.409858
+Mems Startup energy   (J): 0.065650
+Mems Idle energy      (J): 28.375437
+Mems Inactive energy  (J): 3.459849
+
+Mems Total energy (J) for device 0: 35.310794
+Mems Servicing energy (J) for device 0: 3.409858
+Mems Startup energy   (J) for device 0: 0.065650
+Mems Idle energy      (J) for device 0: 28.375437
+Mems Inactive energy  (J) for device 0: 3.459849
+Mems Total energy (J) for device 0 sled 0: 35.310794
+Mems Servicing energy (J) for device 0 sled 0: 3.409858
+Mems Startup energy   (J) for device 0 sled 0: 0.065650
+Mems Idle energy      (J) for device 0 sled 0: 28.375437
+Mems Inactive energy  (J) for device 0 sled 0: 3.459849
+
+
+
+
+SSD STATISTICS
+---------------------
+
+No ssd requests encountered
+
+CONTROLLER STATISTICS
+---------------------
+
+Controller #0 
+
+Total controller bus wait time: 11.583897
+
+BUS STATISTICS
+--------------
+
+Bus #1
+Bus #1 Total utilization time: 	3634.28   	0.00726
+Bus #1 (bus1) Bus idle period length average: 	18.358301
+Bus #1 (bus1) Bus idle period length std.dev.:	38.430963
+Bus #1 (bus1) Bus idle period length maximum:	469.960813
+Bus #1 (bus1) Bus idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+  18392     847     753     660     644     578     922     778     674    2833 
+Bus #1 Number of arbitrations: 	27159
+Bus #1 (bus1) Arbitration wait time average: 	0.000427
+Bus #1 (bus1) Arbitration wait time std.dev.:	0.009529
+Bus #1 (bus1) Arbitration wait time maximum:	0.403361
+Bus #1 (bus1) Arbitration wait time distribution
+   =  0    <  1    <  2    <  5    < 10    < 15    < 25    < 40    < 60     60+
+  27081      78       0       0       0       0       0       0       0       0 
+

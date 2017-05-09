@@ -1,0 +1,2 @@
+package ned;
+@license(LGPL);
