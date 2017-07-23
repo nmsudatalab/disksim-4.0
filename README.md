@@ -7,7 +7,9 @@ This directory is the work of different sources and uploaders combined together
 * DIXtrac tool from [Carnegie Mellon University](http://www.pdl.cmu.edu/DiskSim/index.shtml)
 * Microsoft SSD extension from [Microsoft.com](https://www.microsoft.com/en-us/download/details.aspx?id=52332)
 * 64bit patch from [Western Digital Corp.](https://github.com/westerndigitalcorporation/DiskSim)
-* Different patches has been combined together and made some changes to compile the code from different user.
+* Different patches has been combined together and made some changes to compile the code from different user [PFSsim](https://github.com/myidpt/PFSsim) [benh](https://github.com/benh) [dmeister](https://github.com/dmeister).
+
+
 
 ## Installation requirement
 To compile the all the above code following tools are required
