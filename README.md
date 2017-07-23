@@ -15,4 +15,4 @@ To compile the all the above code following tools are required
 * [Flex](https://github.com/westes/flex)
 * A 64 bit version of Linux (Ubuntu)
 
-A make file has bee added to ease the process to build the disksim 4.0
+A make file has been added to ease the process to build the disksim 4.0 without individually compiling and patching each module.
