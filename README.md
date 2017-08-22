@@ -1,6 +1,4 @@
-# What's DiskSim?
-
-[DiskSim](http://www.pdl.cmu.edu/DiskSim/index.shtml) is an efficient, accurate, highly-configurable disk system simulator originally developed at the University of Michigan and enhanced at CMU to support research into various aspects of storage subsystem architecture. It is written in C and requires no special system software (just basic POSIX interfaces). DiskSim includes modules for most secondary storage components of interest, including device drivers, buses, controllers, adapters, and disk drives. DiskSim also includes support for a number of externally-provided trace formats and internally-generated synthetic workloads, and includes hooks for inclusion in a larger scale system-level simulator.
+Follwing Changes and patches are compiled to make the patching process easy. The original source code is given as well. The make file has been updated in case you can not understand the flow.
 
 # Disksim patching and compiling
 This directory is the work of different sources and uploaders combined together
@@ -20,3 +18,6 @@ To compile the all the above code following tools are required
 A make file has been added to ease the process to build the disksim 4.0 without individually compiling and patching each module.
 
 ### List of changes coming
+# What's DiskSim?
+
+[DiskSim](http://www.pdl.cmu.edu/DiskSim/index.shtml) is an efficient, accurate, highly-configurable disk system simulator originally developed at the University of Michigan and enhanced at CMU to support research into various aspects of storage subsystem architecture. It is written in C and requires no special system software (just basic POSIX interfaces). DiskSim includes modules for most secondary storage components of interest, including device drivers, buses, controllers, adapters, and disk drives. DiskSim also includes support for a number of externally-provided trace formats and internally-generated synthetic workloads, and includes hooks for inclusion in a larger scale system-level simulator.
